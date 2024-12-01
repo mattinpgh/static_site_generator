@@ -1,12 +1,13 @@
-'''
+"""
 Defines the TextNode class and TextType enum.
-'''
+"""
 from enum import Enum
 
 class TextType(Enum):
-    '''
-        Enum for the type of text
-    '''
+    """
+    The TextType class is an enumeration that defines
+    various types of text formatting.
+    """
     NORMAL = "normal"
     BOLD = "bold"
     ITALIC = "italic"
@@ -14,10 +15,15 @@ class TextType(Enum):
     LINK = "link"
     IMAGE = "image"
 
-class TextNode():
-    '''
-        Class to represent a node in a text document
-    '''
+class TextNode:
+    """
+    Represents a text element with an optional URL and a specific type.
+
+    The TextNode class is designed to encapsulate a piece of text along with its
+    type and an optional URL. It provides basic functionality to compare two text
+    nodes for equality based on their attributes and to generate a representational
+    string of the text node for debugging and logging purposes.
+    """
     def __init__(self, text, text_type, url=None):
         self.text = text
         self.text_type = text_type
