@@ -15,7 +15,7 @@ class TextType(Enum):
     in text processing applications where such text transformations are
     needed.
     """
-    NORMAL = "text"
+    TEXT = "text"
     BOLD = "bold"
     ITALIC = "italic"
     CODE = "code"
@@ -73,7 +73,7 @@ class TextNode:
         Converts the TextNode into an equivalent HTML LeafNode.
         """
         match self.text_type:
-            case TextType.NORMAL:
+            case TextType.TEXT:
                 return LeafNode(tag=None, value=self.text, props=None)
             case TextType.BOLD:
                 return LeafNode(tag="b", value=self.text, props=None)

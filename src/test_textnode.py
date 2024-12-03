@@ -46,7 +46,7 @@ class TestTextNode(unittest.TestCase):
         self.assertNotEqual(node, node2)
 
     def test_text_to_html_normal(self):
-        in_text_node = TextNode("This is some text", TextType.NORMAL)
+        in_text_node = TextNode("This is some text", TextType.TEXT)
         out_leaf_node = in_text_node.text_node_to_html_node()
         self.assertIsInstance(out_leaf_node, LeafNode)
         self.assertEqual(out_leaf_node.value, in_text_node.text)
