@@ -2,6 +2,7 @@
 Helper functions to convert markdown to html
 """
 from textnode import TextType, TextNode
+import re
 
 
 def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: TextType) -> list[TextNode]:
@@ -76,3 +77,48 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
             new_nodes.append(TextNode(text[current_pos:], TextType.TEXT))
 
     return new_nodes
+
+
+def extract_markdown_images(text):
+    """
+    Extract alt texts and URLs from Markdown image syntax in the given text.
+
+    Args:
+        text (str): The input text containing Markdown image syntax.
+
+    Returns:
+        list[tuple[str, str]]: A list of tuples, each containing the alt text and the URL.
+
+    Raises:
+        ValueError: If no Markdown image patterns are found in the text.
+    """
+    regex_pattern = r"!\[([^\[\]]*)\]\(([^\(\)]*)\)"
+    matches = re.findall(regex_pattern, text)
+
+    if not matches:
+        raise ValueError(f'Text does not contain a valid Markdown image pattern: {text}')
+
+    return matches
+
+def extract_markdown_links(text):
+    """
+    Extracts all Markdown links from the given text.
+
+    Args:
+        text (str): The input string containing Markdown content.
+
+    Returns:
+        list[tuple[str, str]]: A list of tuples, where each tuple contains:
+                               - The link text (from [ ... ])
+                               - The URL (from ( ... ))
+
+    Raises:
+        ValueError: If no Markdown link patterns are found in the text.
+    """
+    regex_pattern = r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)"
+    matches = re.findall(regex_pattern, text)
+
+    if not matches:
+        raise ValueError(f'Text does not contain a valid Markdown link pattern: {text}')
+
+    return matches

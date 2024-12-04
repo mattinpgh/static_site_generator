@@ -1,6 +1,6 @@
 import unittest
 from textnode import TextNode, TextType
-from md_helpers import split_nodes_delimiter
+from md_helpers import split_nodes_delimiter, extract_markdown_links, extract_markdown_images
 
 class TestMarkdownParser(unittest.TestCase):
     def test_bold_at_start(self):
@@ -242,6 +242,74 @@ class TestMarkdownParser(unittest.TestCase):
         ]
         with self.assertRaises(ValueError):
             split_nodes_delimiter(nodes, "**", TextType.BOLD)
+
+    def test_extract_markdown_images(self):
+        text1 = """
+        Here is an image: ![alt text](https://example.com/image.jpg)
+        and here is a link: [link](https://example.com).
+        """
+        assert extract_markdown_images(text1) == [
+            ("alt text", "https://example.com/image.jpg")
+        ]
+
+        text2 = """
+        Here are two images:
+        ![first image](https://example.com/first.jpg)
+        ![second image](https://example.com/second.png)
+        """
+        assert extract_markdown_images(text2) == [
+            ("first image", "https://example.com/first.jpg"),
+            ("second image", "https://example.com/second.png"),
+        ]
+
+        text3 = "This is just plain text with no images."
+        try:
+            extract_markdown_images(text3)
+        except ValueError as e:
+            assert str(e) == "Text does not contain a valid Markdown image pattern: This is just plain text with no images."
+
+        text4 = "![](https://example.com/image.jpg)"
+        assert extract_markdown_images(text4) == [("", "https://example.com/image.jpg")]
+
+        text5 = "![alt text]()"
+        assert extract_markdown_images(text5) == [("alt text", "")]
+
+    def test_extract_markdown_links(self):
+        # Test Case 1: Mixed content with both images and regular links
+        text1 = """
+        Here is an image: ![alt text](https://example.com/image.jpg)
+        and here is a link: [link](https://example.com).
+        """
+        assert extract_markdown_links(text1) == [("link", "https://example.com")]
+
+        # Test Case 2: Multiple links
+        text2 = """
+        Here are two links:
+        [first link](https://example.com/first)
+        [second link](https://example.com/second)
+        """
+        assert extract_markdown_links(text2) == [
+            ("first link", "https://example.com/first"),
+            ("second link", "https://example.com/second"),
+        ]
+
+        # Test Case 3: Text with no Markdown link patterns
+        text3 = "This text has no links, only plain text."
+        try:
+            extract_markdown_links(text3)
+        except ValueError as e:
+            assert str(e) == "Text does not contain a valid Markdown link pattern: This text has no links, only plain text."
+
+        # Test Case 4: Empty link text and URL
+        text4 = "[]()"
+        assert extract_markdown_links(text4) == [("", "")]
+
+        # Test Case 5: URL-only text (invalid Markdown link)
+        text5 = "https://example.com is a plain URL."
+        try:
+            extract_markdown_links(text5)
+        except ValueError as e:
+            assert str(e) == "Text does not contain a valid Markdown link pattern: https://example.com is a plain URL."
 
 if __name__ == "__main__":
     unittest.main()
